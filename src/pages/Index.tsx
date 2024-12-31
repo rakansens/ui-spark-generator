@@ -11,7 +11,7 @@ import { generateUIWithOpenAI } from "@/utils/openai";
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [designs, setDesigns] = useState<Array<{ code: string }>>([]);
+  const [designs, setDesigns] = useState<Array<{ code: string; style?: string }>>([]);
   const [provider, setProvider] = useState<"openai" | "gemini">("openai");
   const { toast } = useToast();
 
@@ -23,7 +23,8 @@ const Index = () => {
 
     if (provider === "gemini") {
       const codes = await generateUIWithGemini(prompt);
-      return codes.map(code => ({ code }));
+      const styles = ["モダン", "ミニマル", "エレガント", "プレイフル", "コーポレート", "クリエイティブ"];
+      return codes.map((code, index) => ({ code, style: styles[index] }));
     } else {
       return generateUIWithOpenAI(prompt, apiKey);
     }
@@ -95,15 +96,16 @@ const Index = () => {
         </div>
 
         {(loading || designs.length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading
-              ? Array(3)
+              ? Array(6)
                   .fill(null)
                   .map((_, i) => <UIPreviewCard key={i} loading />)
               : designs.map((design, i) => (
                   <UIPreviewCard
                     key={i}
                     code={design.code}
+                    style={design.style}
                     alt={`Design ${i + 1}`}
                   />
                 ))}

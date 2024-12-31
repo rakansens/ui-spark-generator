@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const generateVariation = async (prompt: string, style: "modern" | "minimal" | "elegant") => {
+const generateVariation = async (prompt: string, style: "modern" | "minimal" | "elegant" | "playful" | "corporate" | "creative") => {
   const apiKey = localStorage.getItem("gemini_api_key");
   if (!apiKey) {
     throw new Error("Gemini APIキーが設定されていません");
@@ -12,30 +12,57 @@ const generateVariation = async (prompt: string, style: "modern" | "minimal" | "
   const stylePrompts = {
     modern: `Create a modern, feature-rich UI component that reflects current web design trends.
 Focus on creating an impressive, production-ready design with:
-- Bold typography and color schemes
+- Bold typography and vibrant color schemes
 - Interactive elements and micro-interactions
-- Engaging visual hierarchy
-- Responsive layout for all devices
+- Engaging visual hierarchy with gradients
+- Responsive layout with grid/flexbox
 - Accessibility features
-- Modern UI patterns`,
+- Modern UI patterns like floating elements`,
     
     minimal: `Design a minimal, clean UI component that emphasizes content and functionality.
 Focus on creating a sophisticated, professional design with:
-- Clean typography and whitespace
-- Clear visual hierarchy
+- Clean typography and ample whitespace
+- Monochromatic or duotone color scheme
 - Essential interactive elements
-- Responsive and adaptive layout
-- Accessibility-first approach
-- Minimalist UI patterns`,
+- Grid-based minimal layout
+- Subtle animations
+- Focus on content hierarchy`,
     
     elegant: `Create an elegant, premium UI component with refined details and luxury aesthetics.
 Focus on creating a high-end, polished design with:
-- Sophisticated typography and color palette
+- Sophisticated serif/sans-serif typography
+- Rich color palette with gold/silver accents
 - Premium visual elements and animations
-- Refined interactive features
-- Fully responsive premium layout
-- Accessibility integration
-- Luxury-focused patterns`
+- Asymmetrical layouts
+- Luxury-focused patterns
+- High-end imagery placement`,
+
+    playful: `Design a fun, engaging UI component with playful elements and interactions.
+Focus on creating an energetic, friendly design with:
+- Rounded shapes and organic elements
+- Bright, vibrant color combinations
+- Playful animations and transitions
+- Informal typography
+- Interactive elements with feedback
+- Fun imagery and icon usage`,
+
+    corporate: `Create a professional, business-focused UI component suitable for enterprise applications.
+Focus on creating a trustworthy, efficient design with:
+- Professional typography with clear hierarchy
+- Corporate color schemes
+- Data visualization elements
+- Clean grid layouts
+- Efficient use of space
+- Business-appropriate imagery`,
+
+    creative: `Design an artistic, unique UI component that pushes creative boundaries.
+Focus on creating an innovative, eye-catching design with:
+- Experimental typography and layouts
+- Unique color combinations
+- Creative animations
+- Artistic elements and patterns
+- Innovative navigation
+- Distinctive visual elements`
   };
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS.
@@ -55,7 +82,8 @@ Important rules:
 5. Use semantic HTML elements
 6. Implement proper spacing and padding
 7. Ensure accessibility with ARIA attributes
-8. Generate realistic, context-appropriate content`;
+8. Generate realistic, context-appropriate content
+9. Use shadcn/ui components where appropriate`;
 
   const prompt_template = `${systemPrompt}
 
@@ -77,7 +105,9 @@ The code should be production-ready, responsive, and visually impressive using T
 };
 
 export const generateUIWithGemini = async (prompt: string): Promise<string[]> => {
-  const styles: Array<"modern" | "minimal" | "elegant"> = ["modern", "minimal", "elegant"];
+  const styles: Array<"modern" | "minimal" | "elegant" | "playful" | "corporate" | "creative"> = [
+    "modern", "minimal", "elegant", "playful", "corporate", "creative"
+  ];
   const designs = await Promise.all(styles.map(style => generateVariation(prompt, style)));
   return designs;
 };
