@@ -9,22 +9,15 @@ interface DynamicUIRendererProps {
 const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   const createComponentFromCode = (code: string) => {
     try {
-      // Extract only the JSX code from the response
+      // Extract only the JSX code between ```jsx and ``` tags
       const jsxMatch = code.match(/```(?:jsx|tsx)?\s*([\s\S]*?)```/);
       const jsxCode = jsxMatch ? jsxMatch[1].trim() : code.trim();
-
-      // Remove any explanatory text before or after the JSX
-      const cleanCode = jsxCode
-        .split('\n')
-        .filter(line => line.trim().startsWith('<'))
-        .join('\n')
-        .trim();
 
       // Create a component function that returns the JSX
       const componentCode = `
         (function() {
           return function DynamicComponent() {
-            return ${cleanCode};
+            return ${jsxCode};
           }
         })()
       `;
