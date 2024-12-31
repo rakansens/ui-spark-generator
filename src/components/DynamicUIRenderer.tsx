@@ -18,10 +18,11 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
 
       // JSXをReactコンポーネントとしてラップ
       const wrappedCode = `
-        (function() {
-          return function Component() {
+        (() => {
+          const Component = () => {
             return (${jsxCode});
           };
+          return Component;
         })()
       `;
       
@@ -31,8 +32,8 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
       });
 
       // 文字列のコードを評価して実際のコンポーネントを取得
-      const ComponentFunction = new Function('React', `return ${transpiledCode}`)(React);
-      return React.createElement(ComponentFunction);
+      const Component = new Function('React', `return ${transpiledCode}`)(React);
+      return <Component />;
       
     } catch (error) {
       console.error('Error rendering component:', error);
