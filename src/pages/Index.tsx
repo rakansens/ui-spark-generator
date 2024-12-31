@@ -27,15 +27,15 @@ const Index = () => {
           {
             role: "system",
             content: `You are a UI developer who creates React components using Tailwind CSS. 
-            Generate only the component's JSX code (the return statement content) without any imports or component declaration. 
+            Generate ONLY the JSX code without any explanations or markdown formatting.
+            The response should start directly with the JSX code like <div> or <button>.
             Use only Tailwind CSS classes for styling. The code should be clean, responsive, and modern.`
           },
           {
             role: "user",
             content: `Create a React component UI for: ${prompt}. 
-            Return only the JSX code (what's inside the return statement).
-            Make it responsive and visually appealing using Tailwind CSS.
-            Do not include any imports or the component declaration.`
+            Return ONLY the JSX code, no explanations, no markdown.
+            Make it responsive and visually appealing using Tailwind CSS.`
           }
         ],
         temperature: 0.7,
@@ -48,8 +48,15 @@ const Index = () => {
     }
 
     const data = await response.json();
-    const generatedCode = data.choices[0].message.content;
-    return { code: generatedCode };
+    const generatedCode = data.choices[0].message.content.trim();
+    
+    // マークダウンの```やjsxなどの記号を削除
+    const cleanCode = generatedCode
+      .replace(/```jsx?/g, '')
+      .replace(/```/g, '')
+      .trim();
+
+    return { code: cleanCode };
   };
 
   const generateDesigns = async (prompt: string) => {
