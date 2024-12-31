@@ -15,8 +15,9 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
 
       // Remove any explanatory text before or after the JSX
       const cleanCode = jsxCode
-        .replace(/^.*?</, '<')  // Remove everything before the first <
-        .replace(/>.*$/, '>')   // Remove everything after the last >
+        .split('\n')
+        .filter(line => line.trim().startsWith('<'))
+        .join('\n')
         .trim();
 
       // Create a component function that returns the JSX
