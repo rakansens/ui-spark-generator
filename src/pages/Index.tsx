@@ -8,46 +8,49 @@ import SettingsButton from "@/components/SettingsButton";
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [designs, setDesigns] = useState<Array<{ imageUrl: string; code: string }>>([]);
+  const [designs, setDesigns] = useState<Array<{ code: string }>>([]);
   const { toast } = useToast();
 
-  const generateSingleDesign = async (prompt: string) => {
+  const generateUICode = async (prompt: string) => {
     const apiKey = localStorage.getItem("openai_api_key");
     if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
 
-    const response = await fetch("https://api.openai.com/v1/images/generations", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "dall-e-3",
-        prompt: `Create a modern UI design for: ${prompt}. The design should be clean, minimal, and suitable for a web application.`,
-        n: 1,
-        size: "1024x1024",
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are a UI developer who creates React components using Tailwind CSS. Generate clean, responsive, and modern UI code based on the user's description."
+          },
+          {
+            role: "user",
+            content: `Create a React component with Tailwind CSS for: ${prompt}. The component should be responsive and follow modern design principles.`
+          }
+        ],
+        temperature: 0.7,
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || "画像生成に失敗しました");
+      throw new Error(error.error?.message || "コードの生成に失敗しました");
     }
 
     const data = await response.json();
-    return {
-      imageUrl: data.data[0].url,
-      code: `<div className="p-4">
-  <h1>${prompt}</h1>
-  <p>Generated UI design based on your prompt</p>
-</div>`
-    };
+    const generatedCode = data.choices[0].message.content;
+    return { code: generatedCode };
   };
 
-  const generateUIDesign = async (prompt: string) => {
+  const generateDesigns = async (prompt: string) => {
     const designs = [];
     for (let i = 0; i < 3; i++) {
-      const design = await generateSingleDesign(prompt);
+      const design = await generateUICode(prompt);
       designs.push(design);
     }
     return designs;
@@ -74,10 +77,10 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const generatedDesigns = await generateUIDesign(prompt);
+      const generatedDesigns = await generateDesigns(prompt);
       setDesigns(generatedDesigns);
       toast({
-        title: "UIデザインを生成しました",
+        title: "UIコードを生成しました",
       });
     } catch (error) {
       console.error("Generation error:", error);
@@ -95,7 +98,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 to-blue-900 text-white p-8">
       <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold">UI Design Generator</h1>
+          <h1 className="text-4xl font-bold">UI Code Generator</h1>
           <SettingsButton />
         </div>
 
@@ -123,7 +126,6 @@ const Index = () => {
               : designs.map((design, i) => (
                   <UIPreviewCard
                     key={i}
-                    imageUrl={design.imageUrl}
                     code={design.code}
                     alt={`Design ${i + 1}`}
                   />
