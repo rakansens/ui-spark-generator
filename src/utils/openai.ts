@@ -37,35 +37,47 @@ Return the analysis in a structured format.`;
   const analysis = analysisData.choices[0].message.content;
 
   const stylePrompts = {
-    modern: `Create a modern, feature-rich UI component that reflects current web design trends.
+    modern: `Create a premium, modern UI component that showcases contemporary web design excellence.
 Focus on creating an impressive, production-ready design with:
-- Bold typography and color schemes
-- Interactive elements and micro-interactions
-- Engaging visual hierarchy
-- Responsive layout for all devices
+- Perfect typography hierarchy using custom font sizes
+- Rich interactive elements with micro-animations
+- Advanced CSS Grid and Flexbox layouts
+- Strategic use of gradients and shadows
+- Professional animations and transitions
+- Perfect spacing and padding
 - Accessibility features
-- Modern UI patterns specific to the analyzed industry/purpose`,
+- Integration of shadcn/ui components
+- Loading states and error handling
+- Mobile-first responsive design`,
     
-    minimal: `Design a minimal, clean UI component that emphasizes content and functionality.
-Focus on creating a sophisticated, professional design with:
-- Clean typography and whitespace
-- Clear visual hierarchy
-- Essential interactive elements
-- Responsive and adaptive layout
-- Accessibility-first approach
-- Industry-specific minimal UI patterns`,
+    minimal: `Design a sophisticated, minimal UI component that emphasizes content and functionality.
+Focus on creating a refined, professional design with:
+- Strategic use of whitespace
+- Perfect typography with attention to detail
+- Subtle animations that enhance usability
+- Clean form elements with validation
+- High contrast for readability
+- Professional hover and focus states
+- Loading skeletons
+- Meaningful empty states
+- Mobile-first approach
+- Integration of professional icons`,
     
-    elegant: `Create an elegant, premium UI component with refined details and luxury aesthetics.
+    elegant: `Create a luxury-grade UI component with meticulous attention to detail.
 Focus on creating a high-end, polished design with:
-- Sophisticated typography and color palette
-- Premium visual elements and animations
-- Refined interactive features
-- Fully responsive premium layout
-- Accessibility integration
-- Luxury-focused industry patterns`
+- Premium typography combinations
+- Sophisticated color palette
+- Rich interactive states
+- Advanced grid layouts
+- Strategic use of borders
+- Professional form validation
+- Loading states and transitions
+- Perfect responsiveness
+- Integration of shadcn/ui
+- Meaningful empty states`
   };
 
-  const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS.
+  const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
 Your task is to generate a comprehensive, production-ready UI component based on the following analysis and style requirements.
 
 Analysis of user's request:
@@ -74,20 +86,22 @@ ${analysis}
 Important rules:
 1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
 2. Use Tailwind CSS classes extensively for styling, including:
-   - Complex layouts with grid and flexbox
-   - Responsive design for all screen sizes
-   - Hover and focus states
-   - Animations and transitions
-   - Gradients and shadows
+   - Advanced layouts with grid and flexbox
+   - Perfect responsive design
+   - Rich hover and focus states
+   - Professional animations
+   - Strategic use of shadows
    - Typography hierarchy
-3. Create visually impressive designs that look professional
-4. Include multiple interactive elements and micro-interactions
-5. Use semantic HTML elements
-6. Implement proper spacing and padding
-7. Ensure accessibility with ARIA attributes
-8. Generate realistic, context-appropriate content based on the analysis
-
-The component should be fully functional and reflect the industry, purpose, and target audience identified in the analysis.`;
+3. Create visually impressive designs
+4. Include multiple interactive elements
+5. Use semantic HTML
+6. Implement proper spacing
+7. Ensure accessibility
+8. Generate realistic content
+9. Use shadcn/ui components
+10. Include loading states
+11. Add empty states
+12. Implement validation`;
 
   const styles: Array<"modern" | "minimal" | "elegant"> = ["modern", "minimal", "elegant"];
   const designs = await Promise.all(
