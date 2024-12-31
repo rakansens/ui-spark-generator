@@ -26,11 +26,16 @@ const Index = () => {
         messages: [
           {
             role: "system",
-            content: "You are a UI developer who creates React components using Tailwind CSS. Generate clean, responsive, and modern UI code based on the user's description."
+            content: `You are a UI developer who creates React components using Tailwind CSS. 
+            Generate only the component's JSX code (the return statement content) without any imports or component declaration. 
+            Use only Tailwind CSS classes for styling. The code should be clean, responsive, and modern.`
           },
           {
             role: "user",
-            content: `Create a React component with Tailwind CSS for: ${prompt}. The component should be responsive and follow modern design principles.`
+            content: `Create a React component UI for: ${prompt}. 
+            Return only the JSX code (what's inside the return statement).
+            Make it responsive and visually appealing using Tailwind CSS.
+            Do not include any imports or the component declaration.`
           }
         ],
         temperature: 0.7,
