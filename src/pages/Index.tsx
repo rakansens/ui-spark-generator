@@ -4,16 +4,26 @@ import PromptInput from "@/components/PromptInput";
 import GenerateButton from "@/components/GenerateButton";
 import UIPreviewCard from "@/components/UIPreviewCard";
 import SettingsButton from "@/components/SettingsButton";
+import GenerateOptions from "@/components/GenerateOptions";
+import { generateUIWithGemini } from "@/utils/gemini";
 
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [designs, setDesigns] = useState<Array<{ code: string }>>([]);
+  const [provider, setProvider] = useState<"openai" | "gemini">("openai");
   const { toast } = useToast();
 
   const generateUICode = async (prompt: string, style: "modern" | "minimal" | "elegant") => {
-    const apiKey = localStorage.getItem("openai_api_key");
-    if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
+    const apiKey = localStorage.getItem(`${provider}_api_key`);
+    if (!apiKey) {
+      throw new Error(`${provider === "openai" ? "OpenAI" : "Gemini"} APIキーが設定されていません`);
+    }
+
+    if (provider === "gemini") {
+      const code = await generateUIWithGemini(prompt);
+      return { code };
+    }
 
     const analyzePrompt = `Analyze the following prompt and extract key information:
 - Industry/Domain (e.g., e-commerce, education, healthcare)
@@ -150,6 +160,11 @@ Include realistic content that matches the context and purpose.`;
   };
 
   const generateDesigns = async (prompt: string) => {
+    if (provider === "gemini") {
+      const design = await generateUICode(prompt, "modern");
+      return [design];
+    }
+
     const designs = [];
     const styles: Array<"modern" | "minimal" | "elegant"> = ["modern", "minimal", "elegant"];
     
@@ -169,10 +184,10 @@ Include realistic content that matches the context and purpose.`;
       return;
     }
 
-    const apiKey = localStorage.getItem("openai_api_key");
+    const apiKey = localStorage.getItem(`${provider}_api_key`);
     if (!apiKey) {
       toast({
-        title: "OpenAI APIキーが設定されていません",
+        title: `${provider === "openai" ? "OpenAI" : "Gemini"} APIキーが設定されていません`,
         description: "設定アイコンからAPIキーを設定してください",
         variant: "destructive",
       });
@@ -207,6 +222,10 @@ Include realistic content that matches the context and purpose.`;
         </div>
 
         <div className="space-y-6">
+          <GenerateOptions
+            onSelect={setProvider}
+            disabled={loading}
+          />
           <PromptInput
             value={prompt}
             onChange={setPrompt}
@@ -224,7 +243,7 @@ Include realistic content that matches the context and purpose.`;
         {(loading || designs.length > 0) && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {loading
-              ? Array(3)
+              ? Array(provider === "gemini" ? 1 : 3)
                   .fill(null)
                   .map((_, i) => <UIPreviewCard key={i} loading />)
               : designs.map((design, i) => (
