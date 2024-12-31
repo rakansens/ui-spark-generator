@@ -3,18 +3,28 @@ import { useToast } from "@/components/ui/use-toast";
 import PromptInput from "@/components/PromptInput";
 import GenerateButton from "@/components/GenerateButton";
 import UIPreviewCard from "@/components/UIPreviewCard";
+import SettingsButton from "@/components/SettingsButton";
 
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [designs, setDesigns] = useState<string[]>([]);
+  const [designs, setDesigns] = useState<Array<{ imageUrl: string; code: string }>>([]);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Please enter a prompt",
-        description: "Describe the UI you want to generate",
+        title: "プロンプトを入力してください",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const apiKey = localStorage.getItem("openai_api_key");
+    if (!apiKey) {
+      toast({
+        title: "OpenAI APIキーが設定されていません",
+        description: "設定アイコンからAPIキーを設定してください",
         variant: "destructive",
       });
       return;
@@ -25,15 +35,36 @@ const Index = () => {
     // This is a mock implementation
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      setDesigns(["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"]);
+      setDesigns([
+        {
+          imageUrl: "/placeholder.svg",
+          code: `<div className="p-4">
+  <h1>Generated UI 1</h1>
+  <p>This is a sample code</p>
+</div>`
+        },
+        {
+          imageUrl: "/placeholder.svg",
+          code: `<div className="p-4">
+  <h1>Generated UI 2</h1>
+  <p>This is a sample code</p>
+</div>`
+        },
+        {
+          imageUrl: "/placeholder.svg",
+          code: `<div className="p-4">
+  <h1>Generated UI 3</h1>
+  <p>This is a sample code</p>
+</div>`
+        }
+      ]);
       toast({
-        title: "UI Designs Generated!",
-        description: "Check out your new designs below",
+        title: "UIデザインを生成しました",
       });
     } catch (error) {
       toast({
-        title: "Generation failed",
-        description: "Please try again later",
+        title: "生成に失敗しました",
+        description: "もう一度お試しください",
         variant: "destructive",
       });
     } finally {
@@ -44,11 +75,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 to-blue-900 text-white p-8">
       <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
-        <div className="text-center space-y-4">
+        <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold">UI Design Generator</h1>
-          <p className="text-lg text-gray-300">
-            Describe your dream UI and let AI generate it for you
-          </p>
+          <SettingsButton />
         </div>
 
         <div className="space-y-6">
@@ -72,8 +101,13 @@ const Index = () => {
               ? Array(3)
                   .fill(null)
                   .map((_, i) => <UIPreviewCard key={i} loading />)
-              : designs.map((url, i) => (
-                  <UIPreviewCard key={i} imageUrl={url} alt={`Design ${i + 1}`} />
+              : designs.map((design, i) => (
+                  <UIPreviewCard
+                    key={i}
+                    imageUrl={design.imageUrl}
+                    code={design.code}
+                    alt={`Design ${i + 1}`}
+                  />
                 ))}
           </div>
         )}
