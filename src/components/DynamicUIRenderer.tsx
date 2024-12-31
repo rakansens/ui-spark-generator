@@ -9,36 +9,34 @@ interface DynamicUIRendererProps {
 const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   const createComponentFromCode = (code: string) => {
     try {
-      // JSXコードのみを抽出（import文やコンポーネント定義を除去）
-      const jsxCode = code.replace(/import.*?;/g, '')
-                         .replace(/const.*?=.*?=>\s*{/, '')
-                         .replace(/return\s*\(?\s*/, '')
-                         .replace(/\s*\)\s*;\s*}\s*;?\s*$/, '')
-                         .trim();
+      // Clean up the code by removing any import statements and extra whitespace
+      const cleanCode = code
+        .replace(/import.*?;/g, '')
+        .replace(/export.*?;/g, '')
+        .trim();
 
-      // JSXをReactコンポーネントとしてラップ
-      const wrappedCode = `
-        (() => {
-          const Component = () => {
-            return (${jsxCode});
-          };
-          return Component;
+      // Create a component function that returns the JSX
+      const componentCode = `
+        (function() {
+          return function DynamicComponent() {
+            return ${cleanCode};
+          }
         })()
       `;
-      
-      // Babelでコードをトランスパイル
-      const { code: transpiledCode } = transform(wrappedCode, {
+
+      // Transform the code using Babel
+      const { code: transpiledCode } = transform(componentCode, {
         presets: ['react'],
       });
 
-      // 文字列のコードを評価して実際のコンポーネントを取得
-      const Component = new Function('React', `return ${transpiledCode}`)(React);
-      return <Component />;
-      
+      // Create and return the component
+      const ComponentFunction = new Function('React', `return ${transpiledCode}`)(React);
+      return React.createElement(ComponentFunction);
+
     } catch (error) {
       console.error('Error rendering component:', error);
       return (
-        <div className="p-4 text-red-500 bg-red-100 rounded">
+        <div className="p-4 text-red-500">
           Error rendering component: {error.message}
         </div>
       );

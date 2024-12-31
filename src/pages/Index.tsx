@@ -16,26 +16,24 @@ const Index = () => {
     if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
 
     const systemPrompt = `You are a UI developer specializing in creating React components with Tailwind CSS.
-Your task is to create a single, self-contained React component based on the user's description.
+Generate a single, self-contained JSX code snippet based on the user's description.
 
 Important rules:
-1. Return ONLY the JSX code without any explanations, imports, or exports
-2. Use ONLY Tailwind CSS classes for styling
+1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
+2. Use Tailwind CSS classes for all styling
 3. Create responsive designs that work on all screen sizes
 4. Keep the code clean and modern
-5. Do not include any React hooks or state management
-6. Do not include any event handlers or functions
-7. Focus on creating a static UI that matches the user's description
-8. Do not include any import statements or component definitions
+5. Focus on creating beautiful, static UI elements
+6. Do not include any JavaScript logic or event handlers
 
 Example of good response:
-<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow">
-  <h1 className="text-2xl font-bold">Title</h1>
+<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg">
+  <h1 className="text-2xl font-bold text-gray-800">Title</h1>
   <p className="mt-2 text-gray-600">Content</p>
 </div>`;
 
-    const userPrompt = `Create a UI component that represents: ${prompt}
-Remember to return ONLY the JSX code, no explanations, no imports, no exports.
+    const userPrompt = `Create a beautiful UI component that represents: ${prompt}
+Remember to return ONLY the JSX code without any wrapper, imports, or exports.
 The code should be clean, responsive, and visually appealing using Tailwind CSS.`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -68,13 +66,7 @@ The code should be clean, responsive, and visually appealing using Tailwind CSS.
     const data = await response.json();
     const generatedCode = data.choices[0].message.content.trim();
     
-    // マークダウンの```やjsxなどの記号を削除
-    const cleanCode = generatedCode
-      .replace(/```jsx?/g, '')
-      .replace(/```/g, '')
-      .trim();
-
-    return { code: cleanCode };
+    return { code: generatedCode };
   };
 
   const generateDesigns = async (prompt: string) => {
