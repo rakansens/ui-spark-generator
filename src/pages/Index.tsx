@@ -23,7 +23,7 @@ const Index = () => {
 
     if (provider === "gemini") {
       const codes = await generateUIWithGemini(prompt);
-      const styles = ["モダン", "ミニマル", "エレガント", "プレイフル", "コーポレート", "クリエイティブ"];
+      const styles = ["モダン", "ミニマル", "エレガント"];
       return codes.map((code, index) => ({ code, style: styles[index] }));
     } else {
       return generateUIWithOpenAI(prompt, apiKey);
@@ -96,9 +96,9 @@ const Index = () => {
         </div>
 
         {(loading || designs.length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-6">
             {loading
-              ? Array(6)
+              ? Array(3)
                   .fill(null)
                   .map((_, i) => <UIPreviewCard key={i} loading />)
               : designs.map((design, i) => (
