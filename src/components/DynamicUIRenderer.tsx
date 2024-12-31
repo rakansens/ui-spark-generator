@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card } from './ui/card';
-import * as ReactDOMServer from 'react-dom/server';
 import { transform } from '@babel/standalone';
 
 interface DynamicUIRendererProps {
@@ -10,10 +9,17 @@ interface DynamicUIRendererProps {
 const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   const createComponentFromCode = (code: string) => {
     try {
-      // コードを実際のReactコンポーネントに変換
+      // JSXコードのみを抽出（import文やコンポーネント定義を除去）
+      const jsxCode = code.replace(/import.*?;/g, '')
+                         .replace(/const.*?=.*?=>\s*{/, '')
+                         .replace(/return\s*\(?\s*/, '')
+                         .replace(/\s*\)\s*;\s*}\s*;?\s*$/, '')
+                         .trim();
+
+      // JSXをReactコンポーネントとしてラップ
       const wrappedCode = `
         const Component = () => {
-          return (${code})
+          return (${jsxCode})
         };
         return Component;
       `;
@@ -26,7 +32,6 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
       // 文字列のコードを評価して実際のコンポーネントを取得
       const Component = new Function('React', transpiledCode)(React);
       
-      // コンポーネントをレンダリング
       return <Component />;
     } catch (error) {
       console.error('Error rendering component:', error);
