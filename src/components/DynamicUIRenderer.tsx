@@ -1,22 +1,40 @@
 import React from 'react';
 import { Card } from './ui/card';
+import * as ReactDOMServer from 'react-dom/server';
+import { transform } from '@babel/standalone';
 
 interface DynamicUIRendererProps {
   code: string;
 }
 
 const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
-  // コードから実際のJSXを作成する関数
   const createComponentFromCode = (code: string) => {
     try {
-      // コードからコンポーネントの中身だけを抽出
-      const jsxContent = code.match(/return \(([\s\S]*?)\);/)?.[1] || code;
+      // コードを実際のReactコンポーネントに変換
+      const wrappedCode = `
+        const Component = () => {
+          return (${code})
+        };
+        return Component;
+      `;
       
-      // dangerouslySetInnerHTMLを使用してJSXをレンダリング
-      return <div dangerouslySetInnerHTML={{ __html: jsxContent }} />;
+      // Babelでコードをトランスパイル
+      const { code: transpiledCode } = transform(wrappedCode, {
+        presets: ['react'],
+      });
+
+      // 文字列のコードを評価して実際のコンポーネントを取得
+      const Component = new Function('React', transpiledCode)(React);
+      
+      // コンポーネントをレンダリング
+      return <Component />;
     } catch (error) {
       console.error('Error rendering component:', error);
-      return <div className="text-red-500">Error rendering component</div>;
+      return (
+        <div className="p-4 text-red-500 bg-red-100 rounded">
+          Error rendering component: {error.message}
+        </div>
+      );
     }
   };
 
