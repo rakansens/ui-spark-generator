@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import PromptInput from "@/components/PromptInput";
 import GenerateButton from "@/components/GenerateButton";
 import UIPreviewCard from "@/components/UIPreviewCard";
@@ -10,6 +10,39 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [designs, setDesigns] = useState<Array<{ imageUrl: string; code: string }>>([]);
   const { toast } = useToast();
+
+  const generateUIDesign = async (prompt: string) => {
+    const apiKey = localStorage.getItem("openai_api_key");
+    if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
+
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "dall-e-3",
+        prompt: `Create a modern UI design for: ${prompt}. The design should be clean, minimal, and suitable for a web application.`,
+        n: 3,
+        size: "1024x1024",
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || "画像生成に失敗しました");
+    }
+
+    const data = await response.json();
+    return data.data.map((item: any) => ({
+      imageUrl: item.url,
+      code: `<div className="p-4">
+  <h1>${prompt}</h1>
+  <p>Generated UI design based on your prompt</p>
+</div>`
+    }));
+  };
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -31,40 +64,17 @@ const Index = () => {
     }
 
     setLoading(true);
-    // TODO: Implement actual AI generation
-    // This is a mock implementation
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setDesigns([
-        {
-          imageUrl: "/placeholder.svg",
-          code: `<div className="p-4">
-  <h1>Generated UI 1</h1>
-  <p>This is a sample code</p>
-</div>`
-        },
-        {
-          imageUrl: "/placeholder.svg",
-          code: `<div className="p-4">
-  <h1>Generated UI 2</h1>
-  <p>This is a sample code</p>
-</div>`
-        },
-        {
-          imageUrl: "/placeholder.svg",
-          code: `<div className="p-4">
-  <h1>Generated UI 3</h1>
-  <p>This is a sample code</p>
-</div>`
-        }
-      ]);
+      const generatedDesigns = await generateUIDesign(prompt);
+      setDesigns(generatedDesigns);
       toast({
         title: "UIデザインを生成しました",
       });
     } catch (error) {
+      console.error("Generation error:", error);
       toast({
         title: "生成に失敗しました",
-        description: "もう一度お試しください",
+        description: error instanceof Error ? error.message : "もう一度お試しください",
         variant: "destructive",
       });
     } finally {
