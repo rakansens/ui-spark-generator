@@ -7,7 +7,8 @@ const generateVariation = async (prompt: string, style: "modern" | "minimal" | "
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  // Flashモードの場合はgemini-pro-visionを使用
+  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
   const stylePrompts = {
     modern: `Create a premium, modern UI component that showcases the best of contemporary web design.
