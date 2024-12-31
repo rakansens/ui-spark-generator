@@ -11,7 +11,7 @@ const Index = () => {
   const [designs, setDesigns] = useState<Array<{ imageUrl: string; code: string }>>([]);
   const { toast } = useToast();
 
-  const generateUIDesign = async (prompt: string) => {
+  const generateSingleDesign = async (prompt: string) => {
     const apiKey = localStorage.getItem("openai_api_key");
     if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
 
@@ -24,7 +24,7 @@ const Index = () => {
       body: JSON.stringify({
         model: "dall-e-3",
         prompt: `Create a modern UI design for: ${prompt}. The design should be clean, minimal, and suitable for a web application.`,
-        n: 3,
+        n: 1,
         size: "1024x1024",
       }),
     });
@@ -35,13 +35,22 @@ const Index = () => {
     }
 
     const data = await response.json();
-    return data.data.map((item: any) => ({
-      imageUrl: item.url,
+    return {
+      imageUrl: data.data[0].url,
       code: `<div className="p-4">
   <h1>${prompt}</h1>
   <p>Generated UI design based on your prompt</p>
 </div>`
-    }));
+    };
+  };
+
+  const generateUIDesign = async (prompt: string) => {
+    const designs = [];
+    for (let i = 0; i < 3; i++) {
+      const design = await generateSingleDesign(prompt);
+      designs.push(design);
+    }
+    return designs;
   };
 
   const handleGenerate = async () => {
