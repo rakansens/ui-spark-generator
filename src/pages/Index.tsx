@@ -15,6 +15,29 @@ const Index = () => {
     const apiKey = localStorage.getItem("openai_api_key");
     if (!apiKey) throw new Error("OpenAI APIキーが設定されていません");
 
+    const systemPrompt = `You are a UI developer specializing in creating React components with Tailwind CSS.
+Your task is to create a single, self-contained React component based on the user's description.
+
+Important rules:
+1. Return ONLY the JSX code without any explanations, imports, or exports
+2. Use ONLY Tailwind CSS classes for styling
+3. Create responsive designs that work on all screen sizes
+4. Keep the code clean and modern
+5. Do not include any React hooks or state management
+6. Do not include any event handlers or functions
+7. Focus on creating a static UI that matches the user's description
+8. Do not include any import statements or component definitions
+
+Example of good response:
+<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow">
+  <h1 className="text-2xl font-bold">Title</h1>
+  <p className="mt-2 text-gray-600">Content</p>
+</div>`;
+
+    const userPrompt = `Create a UI component that represents: ${prompt}
+Remember to return ONLY the JSX code, no explanations, no imports, no exports.
+The code should be clean, responsive, and visually appealing using Tailwind CSS.`;
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -26,16 +49,11 @@ const Index = () => {
         messages: [
           {
             role: "system",
-            content: `You are a UI developer who creates React components using Tailwind CSS. 
-            Generate ONLY the JSX code without any explanations or markdown formatting.
-            The response should start directly with the JSX code like <div> or <button>.
-            Use only Tailwind CSS classes for styling. The code should be clean, responsive, and modern.`
+            content: systemPrompt
           },
           {
             role: "user",
-            content: `Create a React component UI for: ${prompt}. 
-            Return ONLY the JSX code, no explanations, no markdown.
-            Make it responsive and visually appealing using Tailwind CSS.`
+            content: userPrompt
           }
         ],
         temperature: 0.7,
