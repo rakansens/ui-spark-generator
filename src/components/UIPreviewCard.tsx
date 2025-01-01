@@ -31,7 +31,9 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
                   {style}
                 </span>
               )}
-              {code && <DynamicUIRenderer code={code} />}
+              <div className="bg-white rounded-lg p-4">
+                {code && <DynamicUIRenderer code={code} />}
+              </div>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span className="text-white text-sm font-medium">クリックして詳細を表示</span>
               </div>
@@ -41,17 +43,17 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-white">
           <DialogHeader>
             <DialogTitle>{style || "生成されたUI"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6">
-            <div className="border rounded-lg p-4 bg-white/5">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+            <div className="border rounded-lg p-4 bg-white">
               <DynamicUIRenderer code={code || ""} />
             </div>
             {code && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-white/80">生成されたコード:</h3>
+                <h3 className="text-sm font-medium">生成されたコード:</h3>
                 <CodePreview code={code} />
               </div>
             )}
