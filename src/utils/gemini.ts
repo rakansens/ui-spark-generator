@@ -10,10 +10,10 @@ const generateUI = async (prompt: string) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
-Generate a comprehensive, production-ready UI component based on the user's request.
+Generate a SINGLE, comprehensive, production-ready UI component based on the user's request.
 
 Important rules:
-1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
+1. Return ONLY pure JSX code for a SINGLE component without any React component wrapper, imports, or exports
 2. Use Tailwind CSS classes extensively for styling, including:
    - Advanced layouts with grid and flexbox
    - Rich animations (animate-fade-in, animate-bounce)
@@ -26,7 +26,7 @@ Important rules:
    - Smooth animations and transitions
    - Interactive hover states
    - Professional spacing
-4. Include multiple interactive elements with proper states
+4. Include interactive elements with proper states
 5. Use semantic HTML elements
 6. Implement proper spacing and padding
 7. Ensure accessibility with ARIA attributes
@@ -41,9 +41,9 @@ Important rules:
 
 User request: "${prompt}"
 
-Create a beautiful UI component that perfectly matches the request.
+Create a beautiful SINGLE UI component that perfectly matches the request.
 Remember to:
-1. Return ONLY the JSX code without any wrapper, imports, or exports
+1. Return ONLY the JSX code for ONE component without any wrapper, imports, or exports
 2. Make sure the component directly addresses the user's specific request
 3. Include proper light backgrounds for visibility
 4. Add meaningful animations and interactions

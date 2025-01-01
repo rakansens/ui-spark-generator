@@ -37,13 +37,13 @@ Return the analysis in a structured format.`;
   const analysis = analysisData.choices[0].message.content;
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
-Your task is to generate a comprehensive, production-ready UI component based on the following analysis and style requirements.
+Your task is to generate a SINGLE, comprehensive, production-ready UI component based on the following analysis and style requirements.
 
 Analysis of user's request:
 ${analysis}
 
 Important rules:
-1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
+1. Return ONLY pure JSX code for a SINGLE component without any React component wrapper, imports, or exports
 2. Use Tailwind CSS classes extensively for styling, including:
    - Advanced layouts with grid and flexbox
    - Perfect responsive design
@@ -52,23 +52,21 @@ Important rules:
    - Strategic use of shadows
    - Typography hierarchy
 3. Create visually impressive designs
-4. Include multiple interactive elements
+4. Include interactive elements with proper states
 5. Use semantic HTML
 6. Implement proper spacing
 7. Ensure accessibility
 8. Generate realistic content
-9. Use shadcn/ui components
-10. Include loading states
-11. Add empty states
-12. ALWAYS wrap content in a light background container:
+9. Use shadcn/ui components where appropriate
+10. ALWAYS wrap content in a light background container:
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6">`;
 
   const userPrompt = `Based on the analysis:
 ${analysis}
 
-Create a beautiful UI component that perfectly matches the identified industry, purpose, and target audience.
+Create a beautiful SINGLE UI component that perfectly matches the identified industry, purpose, and target audience.
 Remember to:
-1. Return ONLY the JSX code without any wrapper, imports, or exports
+1. Return ONLY the JSX code for ONE component without any wrapper, imports, or exports
 2. Make sure the component directly addresses the user's specific request
 3. Include proper light backgrounds for visibility
 4. Add meaningful animations and interactions
