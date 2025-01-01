@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import CodePreview from "./CodePreview";
 import DynamicUIRenderer from "./DynamicUIRenderer";
@@ -31,9 +31,7 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
                   {style}
                 </span>
               )}
-              <div className="bg-white rounded-lg p-4">
-                {code && <DynamicUIRenderer code={code} />}
-              </div>
+              {code && <DynamicUIRenderer code={code} />}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span className="text-white text-sm font-medium">クリックして詳細を表示</span>
               </div>
@@ -43,20 +41,17 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-white dark:bg-gray-900">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{style || "生成されたUI"}</DialogTitle>
-            <DialogDescription>
-              プレビューとコードを確認できます
-            </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-6 pr-2">
-            <div className="border rounded-lg p-4 bg-white dark:bg-gray-800">
+          <div className="space-y-6">
+            <div className="border rounded-lg p-4 bg-white/5">
               <DynamicUIRenderer code={code || ""} />
             </div>
             {code && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium">生成されたコード:</h3>
+                <h3 className="text-sm font-medium text-white/80">生成されたコード:</h3>
                 <CodePreview code={code} />
               </div>
             )}
