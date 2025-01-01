@@ -1,10 +1,12 @@
-export const generateUIWithOpenAI = async (prompt: string, apiKey: string): Promise<Array<{ code: string }>> => {
+export const generateUIWithOpenAI = async (prompt: string, apiKey: string): Promise<Array<{ code: string; style?: string }>> => {
   const analyzePrompt = `Analyze the following prompt and extract key information:
 - Industry/Domain (e.g., e-commerce, education, healthcare)
 - Purpose (e.g., sales, information, learning)
 - Target audience
 - Key features needed
 - Tone/Style preferences
+- Required interactivity level
+- Mobile responsiveness requirements
 
 Prompt: "${prompt}"
 
@@ -38,43 +40,119 @@ Return the analysis in a structured format.`;
 
   const stylePrompts = {
     modern: `Create a premium, modern UI component that showcases contemporary web design excellence.
-Focus on creating an impressive, production-ready design with:
-- Perfect typography hierarchy using custom font sizes
-- Rich interactive elements with micro-animations
-- Advanced CSS Grid and Flexbox layouts
-- Strategic use of gradients and shadows
-- Professional animations and transitions
-- Perfect spacing and padding
-- Accessibility features
-- Integration of shadcn/ui components
-- Loading states and error handling
-- Mobile-first responsive design`,
+
+Key Design Requirements:
+1. Visual Hierarchy:
+   - Use bold typography with clear hierarchy (text-2xl to text-5xl for headings)
+   - Implement consistent spacing (my-2 to my-8, px-4 to px-8)
+   - Apply proper contrast ratios for readability
+
+2. Responsive Design:
+   - Mobile-first approach using Tailwind's responsive prefixes
+   - Flexible layouts with grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+   - Adaptive spacing and typography
+
+3. Interactive Elements:
+   - Smooth hover transitions (duration-300)
+   - Scale transforms on hover (hover:scale-105)
+   - Loading states with skeleton animations
+   - Error states with proper feedback
+
+4. Accessibility:
+   - Semantic HTML structure
+   - ARIA labels and roles
+   - Keyboard navigation support
+   - Focus visible states
+
+5. Professional Polish:
+   - Gradient backgrounds (bg-gradient-to-r)
+   - Subtle shadows (shadow-md to shadow-xl)
+   - Border radius consistency (rounded-lg)
+   - Professional color combinations
+
+6. Component Integration:
+   - Proper use of shadcn/ui components
+   - Consistent styling with existing UI
+   - Error boundary implementation
+   - Loading state handling`,
     
     minimal: `Design a sophisticated, minimal UI component that emphasizes content and functionality.
-Focus on creating a refined, professional design with:
-- Strategic use of whitespace
-- Perfect typography with attention to detail
-- Subtle animations that enhance usability
-- Clean form elements with validation
-- High contrast for readability
-- Professional hover and focus states
-- Loading skeletons
-- Meaningful empty states
-- Mobile-first approach
-- Integration of professional icons`,
+
+Key Design Requirements:
+1. Typography:
+   - Clean font hierarchy (text-sm to text-2xl)
+   - Optimal line heights (leading-relaxed)
+   - Proper letter spacing
+   - High contrast text colors
+
+2. Spacing:
+   - Consistent whitespace (p-4 to p-8)
+   - Balanced margins (my-2 to my-6)
+   - Grid gaps (gap-4 to gap-8)
+   - Section separation
+
+3. Interactive Elements:
+   - Subtle hover effects (opacity changes)
+   - Minimal transitions (duration-200)
+   - Clean form elements
+   - Simple loading states
+
+4. Accessibility:
+   - Semantic markup
+   - ARIA attributes
+   - Keyboard focus styles
+   - Screen reader support
+
+5. Visual Design:
+   - Monochromatic color scheme
+   - Thin borders (border-[0.5px])
+   - Subtle shadows (shadow-sm)
+   - Clean lines and shapes
+
+6. Responsive Layout:
+   - Mobile-first approach
+   - Simple grid systems
+   - Flexible containers
+   - Breakpoint consistency`,
     
     elegant: `Create a luxury-grade UI component with meticulous attention to detail.
-Focus on creating a high-end, polished design with:
-- Premium typography combinations
-- Sophisticated color palette
-- Rich interactive states
-- Advanced grid layouts
-- Strategic use of borders
-- Professional form validation
-- Loading states and transitions
-- Perfect responsiveness
-- Integration of shadcn/ui
-- Meaningful empty states`
+
+Key Design Requirements:
+1. Typography:
+   - Refined font combinations (serif headings)
+   - Custom letter spacing
+   - Balanced line heights
+   - Rich text colors
+
+2. Visual Elements:
+   - Gold accents (#B4925E)
+   - Subtle gradients
+   - High-quality imagery
+   - Refined borders
+
+3. Interactions:
+   - Smooth transitions (duration-500)
+   - Elegant hover effects
+   - Refined loading states
+   - Professional animations
+
+4. Layout:
+   - Perfect symmetry
+   - Golden ratio proportions
+   - Consistent spacing
+   - Proper alignment
+
+5. Accessibility:
+   - Semantic structure
+   - ARIA labels
+   - Keyboard navigation
+   - Focus states
+
+6. Responsive Design:
+   - Graceful degradation
+   - Maintained elegance
+   - Proper spacing
+   - Typography scaling`
   };
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
@@ -83,25 +161,28 @@ Your task is to generate a comprehensive, production-ready UI component based on
 Analysis of user's request:
 ${analysis}
 
-Important rules:
+Technical Requirements:
 1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
-2. Use Tailwind CSS classes extensively for styling, including:
-   - Advanced layouts with grid and flexbox
-   - Perfect responsive design
-   - Rich hover and focus states
-   - Professional animations
-   - Strategic use of shadows
-   - Typography hierarchy
-3. Create visually impressive designs
-4. Include multiple interactive elements
-5. Use semantic HTML
-6. Implement proper spacing
-7. Ensure accessibility
-8. Generate realistic content
-9. Use shadcn/ui components
-10. Include loading states
-11. Add empty states
-12. Implement validation`;
+2. Use Tailwind CSS extensively for:
+   - Responsive layouts (mobile-first)
+   - Interactive states
+   - Animations and transitions
+   - Typography and spacing
+3. Implement proper accessibility:
+   - Semantic HTML
+   - ARIA attributes
+   - Keyboard navigation
+   - Focus management
+4. Include error handling:
+   - Loading states
+   - Error messages
+   - Empty states
+   - Form validation
+5. Optimize performance:
+   - Efficient class usage
+   - Proper event handling
+   - Conditional rendering
+   - Lazy loading`;
 
   const styles: Array<"modern" | "minimal" | "elegant"> = ["modern", "minimal", "elegant"];
   const designs = await Promise.all(
@@ -146,7 +227,7 @@ Include realistic content that matches the context and purpose.`;
       const data = await response.json();
       const generatedCode = data.choices[0].message.content.trim();
       
-      return { code: generatedCode };
+      return { code: generatedCode, style };
     })
   );
 
