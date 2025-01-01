@@ -36,47 +36,6 @@ Return the analysis in a structured format.`;
   const analysisData = await analysisResponse.json();
   const analysis = analysisData.choices[0].message.content;
 
-  const stylePrompts = {
-    modern: `Create a premium, modern UI component that showcases contemporary web design excellence.
-Focus on creating an impressive, production-ready design with:
-- Perfect typography hierarchy using custom font sizes
-- Rich interactive elements with micro-animations
-- Advanced CSS Grid and Flexbox layouts
-- Strategic use of gradients and shadows
-- Professional animations and transitions
-- Perfect spacing and padding
-- Accessibility features
-- Integration of shadcn/ui components
-- Loading states and error handling
-- Mobile-first responsive design`,
-    
-    minimal: `Design a sophisticated, minimal UI component that emphasizes content and functionality.
-Focus on creating a refined, professional design with:
-- Strategic use of whitespace
-- Perfect typography with attention to detail
-- Subtle animations that enhance usability
-- Clean form elements with validation
-- High contrast for readability
-- Professional hover and focus states
-- Loading skeletons
-- Meaningful empty states
-- Mobile-first approach
-- Integration of professional icons`,
-    
-    elegant: `Create a luxury-grade UI component with meticulous attention to detail.
-Focus on creating a high-end, polished design with:
-- Premium typography combinations
-- Sophisticated color palette
-- Rich interactive states
-- Advanced grid layouts
-- Strategic use of borders
-- Professional form validation
-- Loading states and transitions
-- Perfect responsiveness
-- Integration of shadcn/ui
-- Meaningful empty states`
-  };
-
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
 Your task is to generate a comprehensive, production-ready UI component based on the following analysis and style requirements.
 
@@ -101,54 +60,49 @@ Important rules:
 9. Use shadcn/ui components
 10. Include loading states
 11. Add empty states
-12. Implement validation`;
+12. ALWAYS wrap content in a light background container:
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6">`;
 
-  const styles: Array<"modern" | "minimal" | "elegant"> = ["modern", "minimal", "elegant"];
-  const designs = await Promise.all(
-    styles.map(async (style) => {
-      const userPrompt = `${stylePrompts[style]}
-
-Based on the analysis:
+  const userPrompt = `Based on the analysis:
 ${analysis}
 
 Create a beautiful UI component that perfectly matches the identified industry, purpose, and target audience.
-Remember to return ONLY the JSX code without any wrapper, imports, or exports.
-The code should be production-ready, responsive, and visually impressive using Tailwind CSS.
-Include realistic content that matches the context and purpose.`;
+Remember to:
+1. Return ONLY the JSX code without any wrapper, imports, or exports
+2. Make sure the component directly addresses the user's specific request
+3. Include proper light backgrounds for visibility
+4. Add meaningful animations and interactions
+5. Use realistic content that matches the context`;
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
         },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            {
-              role: "user",
-              content: userPrompt
-            }
-          ],
-          temperature: 0.7,
-        }),
-      });
+        {
+          role: "user",
+          content: userPrompt
+        }
+      ],
+      temperature: 0.7,
+    }),
+  });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || "コードの生成に失敗しました");
-      }
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || "コードの生成に失敗しました");
+  }
 
-      const data = await response.json();
-      const generatedCode = data.choices[0].message.content.trim();
-      
-      return { code: generatedCode };
-    })
-  );
-
-  return designs;
+  const data = await response.json();
+  const generatedCode = data.choices[0].message.content.trim();
+  
+  return [{ code: generatedCode }];
 };

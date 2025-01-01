@@ -11,22 +11,22 @@ import { generateUIWithOpenAI } from "@/utils/openai";
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [designs, setDesigns] = useState<Array<{ code: string; style?: string }>>([]);
+  const [design, setDesign] = useState<{ code: string; style?: string } | null>(null);
   const [provider, setProvider] = useState<"openai" | "gemini">("openai");
   const { toast } = useToast();
 
-  const generateDesigns = async (prompt: string) => {
+  const generateDesign = async (prompt: string) => {
     const apiKey = localStorage.getItem(`${provider}_api_key`);
     if (!apiKey) {
       throw new Error(`${provider === "openai" ? "OpenAI" : "Gemini"} APIキーが設定されていません`);
     }
 
     if (provider === "gemini") {
-      const codes = await generateUIWithGemini(prompt);
-      const styles = ["モダン", "ミニマル", "エレガント", "プレイフル", "コーポレート", "クリエイティブ"];
-      return codes.map((code, index) => ({ code, style: styles[index] }));
+      const code = await generateUIWithGemini(prompt);
+      return { code: code[0], style: "モダン" };
     } else {
-      return generateUIWithOpenAI(prompt, apiKey);
+      const designs = await generateUIWithOpenAI(prompt, apiKey);
+      return designs[0];
     }
   };
 
@@ -51,8 +51,8 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const generatedDesigns = await generateDesigns(prompt);
-      setDesigns(generatedDesigns);
+      const generatedDesign = await generateDesign(prompt);
+      setDesign(generatedDesign);
       toast({
         title: "UIコードを生成しました",
       });
@@ -95,20 +95,19 @@ const Index = () => {
           </div>
         </div>
 
-        {(loading || designs.length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading
-              ? Array(6)
-                  .fill(null)
-                  .map((_, i) => <UIPreviewCard key={i} loading />)
-              : designs.map((design, i) => (
-                  <UIPreviewCard
-                    key={i}
-                    code={design.code}
-                    style={design.style}
-                    alt={`Design ${i + 1}`}
-                  />
-                ))}
+        {(loading || design) && (
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl">
+              {loading ? (
+                <UIPreviewCard loading />
+              ) : (
+                <UIPreviewCard
+                  code={design?.code}
+                  style={design?.style}
+                  alt="Generated Design"
+                />
+              )}
+            </div>
           </div>
         )}
       </div>
