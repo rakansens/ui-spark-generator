@@ -9,8 +9,17 @@ const generateUI = async (prompt: string) => {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
+  const styles = [
+    { name: "モダン", description: "modern and sleek design with vibrant colors and smooth animations" },
+    { name: "エレガント", description: "elegant and sophisticated design with refined aesthetics" },
+    { name: "ミニマル", description: "minimalist design focusing on essential elements and clean layout" },
+  ];
+
+  const results = await Promise.all(styles.map(async (style) => {
+    const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
 Generate a SINGLE, comprehensive, production-ready UI component based on the user's request.
+
+Style requirement: ${style.description}
 
 Important rules:
 1. Return ONLY pure JSX code for a SINGLE component without any React component wrapper, imports, or exports
@@ -37,7 +46,7 @@ Important rules:
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6">
 12. Make sure the generated UI directly addresses the user's specific request`;
 
-  const prompt_template = `${systemPrompt}
+    const prompt_template = `${systemPrompt}
 
 User request: "${prompt}"
 
@@ -49,12 +58,15 @@ Remember to:
 4. Add meaningful animations and interactions
 5. Use realistic content that matches the context`;
 
-  const result = await model.generateContent(prompt_template);
-  const response = await result.response;
-  const text = response.text();
-  
-  const codeMatch = text.match(/```(?:jsx|tsx)?\s*([\s\S]*?)```/);
-  return [codeMatch ? codeMatch[1].trim() : text.trim()];
+    const result = await model.generateContent(prompt_template);
+    const response = await result.response;
+    const text = response.text();
+    
+    const codeMatch = text.match(/```(?:jsx|tsx)?\s*([\s\S]*?)```/);
+    return codeMatch ? codeMatch[1].trim() : text.trim();
+  }));
+
+  return results;
 };
 
 export const generateUIWithGemini = generateUI;

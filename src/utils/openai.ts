@@ -1,4 +1,4 @@
-export const generateUIWithOpenAI = async (prompt: string, apiKey: string): Promise<Array<{ code: string }>> => {
+export const generateUIWithOpenAI = async (prompt: string, apiKey: string): Promise<Array<{ code: string; style: string }>> => {
   const analyzePrompt = `Analyze the following prompt and extract key information:
 - Industry/Domain (e.g., e-commerce, education, healthcare)
 - Purpose (e.g., sales, information, learning)
@@ -36,11 +36,20 @@ Return the analysis in a structured format.`;
   const analysisData = await analysisResponse.json();
   const analysis = analysisData.choices[0].message.content;
 
-  const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
+  const styles = [
+    { name: "モダン", description: "modern and sleek design with vibrant colors and smooth animations" },
+    { name: "エレガント", description: "elegant and sophisticated design with refined aesthetics" },
+    { name: "ミニマル", description: "minimalist design focusing on essential elements and clean layout" },
+  ];
+
+  const designs = await Promise.all(styles.map(async (style) => {
+    const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
 Your task is to generate a SINGLE, comprehensive, production-ready UI component based on the following analysis and style requirements.
 
 Analysis of user's request:
 ${analysis}
+
+Style requirement: ${style.description}
 
 Important rules:
 1. Return ONLY pure JSX code for a SINGLE component without any React component wrapper, imports, or exports
@@ -61,10 +70,12 @@ Important rules:
 10. ALWAYS wrap content in a light background container:
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6">`;
 
-  const userPrompt = `Based on the analysis:
+    const userPrompt = `Based on the analysis:
 ${analysis}
 
 Create a beautiful SINGLE UI component that perfectly matches the identified industry, purpose, and target audience.
+Style requirement: ${style.description}
+
 Remember to:
 1. Return ONLY the JSX code for ONE component without any wrapper, imports, or exports
 2. Make sure the component directly addresses the user's specific request
@@ -72,35 +83,38 @@ Remember to:
 4. Add meaningful animations and interactions
 5. Use realistic content that matches the context`;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      temperature: 0.7,
-    }),
-  });
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+      }),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || "コードの生成に失敗しました");
-  }
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || "コードの生成に失敗しました");
+    }
 
-  const data = await response.json();
-  const generatedCode = data.choices[0].message.content.trim();
-  
-  return [{ code: generatedCode }];
+    const data = await response.json();
+    const generatedCode = data.choices[0].message.content.trim();
+    
+    return { code: generatedCode, style: style.name };
+  }));
+
+  return designs;
 };

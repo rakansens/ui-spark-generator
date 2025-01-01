@@ -11,22 +11,24 @@ import { generateUIWithOpenAI } from "@/utils/openai";
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [design, setDesign] = useState<{ code: string; style?: string } | null>(null);
+  const [designs, setDesigns] = useState<Array<{ code: string; style?: string }>>([]);
   const [provider, setProvider] = useState<"openai" | "gemini">("openai");
   const { toast } = useToast();
 
-  const generateDesign = async (prompt: string) => {
+  const generateDesigns = async (prompt: string) => {
     const apiKey = localStorage.getItem(`${provider}_api_key`);
     if (!apiKey) {
       throw new Error(`${provider === "openai" ? "OpenAI" : "Gemini"} APIキーが設定されていません`);
     }
 
     if (provider === "gemini") {
-      const code = await generateUIWithGemini(prompt);
-      return { code: code[0], style: "モダン" };
+      const codes = await generateUIWithGemini(prompt);
+      return codes.map((code, index) => ({
+        code,
+        style: ["モダン", "エレガント", "ミニマル"][index]
+      }));
     } else {
-      const designs = await generateUIWithOpenAI(prompt, apiKey);
-      return designs[0];
+      return await generateUIWithOpenAI(prompt, apiKey);
     }
   };
 
@@ -51,8 +53,8 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const generatedDesign = await generateDesign(prompt);
-      setDesign(generatedDesign);
+      const generatedDesigns = await generateDesigns(prompt);
+      setDesigns(generatedDesigns);
       toast({
         title: "UIコードを生成しました",
       });
@@ -95,19 +97,22 @@ const Index = () => {
           </div>
         </div>
 
-        {(loading || design) && (
-          <div className="flex justify-center">
-            <div className="w-full max-w-2xl">
-              {loading ? (
-                <UIPreviewCard loading />
-              ) : (
+        {(loading || designs.length > 0) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              Array(3).fill(null).map((_, i) => (
+                <UIPreviewCard key={i} loading />
+              ))
+            ) : (
+              designs.map((design, index) => (
                 <UIPreviewCard
-                  code={design?.code}
-                  style={design?.style}
-                  alt="Generated Design"
+                  key={index}
+                  code={design.code}
+                  style={design.style}
+                  alt={`Generated Design ${index + 1}`}
                 />
-              )}
-            </div>
+              ))
+            )}
           </div>
         )}
       </div>
