@@ -46,14 +46,14 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-black">
+        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
           <DialogHeader>
-            <DialogTitle className="text-white">{style || "生成されたUI"}</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-gray-900 dark:text-white">{style || "生成されたUI"}</DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-gray-400">
               生成されたUIのプレビューとコードを確認できます
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-black/50 rounded-lg backdrop-blur-sm">
+          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-gray-200/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
             <div className="relative bg-black border-2 border-gray-400 dark:border-gray-500 rounded-lg p-6 shadow-lg">
               <div className="preview-container relative">
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1)),linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1))] bg-[length:20px_20px] opacity-20"></div>
@@ -64,7 +64,7 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
             </div>
             {code && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-white">生成されたコード:</h3>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">生成されたコード:</h3>
                 <CodePreview code={code} />
               </div>
             )}
