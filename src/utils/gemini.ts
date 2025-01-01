@@ -15,28 +15,34 @@ Focus on creating an impressive, production-ready design with:
 - Bold typography with perfect hierarchy using custom font sizes
 - Rich interactive elements with hover states and micro-animations using Tailwind's animate classes
 - Advanced layout using CSS Grid and Flexbox for perfect responsiveness
-- Strategic use of gradients (bg-gradient-to-r from-purple-500 to-blue-500)
+- Strategic use of gradients (bg-gradient-to-r from-blue-500 to-cyan-500)
 - Meaningful animations (animate-fade-in, animate-bounce, animate-pulse)
 - Professional spacing and padding using Tailwind's spacing system
 - Accessibility features including ARIA labels
 - Integration of shadcn/ui components
 - Hover effects with scale transformations (hover:scale-105)
 - Transition effects on interactive elements
-- Use vibrant colors like indigo-500, purple-600, blue-500`,
+- Use vibrant colors like blue-500, cyan-600, indigo-500
+
+Important: Ensure the component has a white or light background (bg-white or bg-gray-50) for visibility, and wrap interactive elements in proper containers with background colors.
+Return ONLY the JSX code without any wrapper, imports, or exports.`,
     
     minimal: `Design a sophisticated, minimal UI component with subtle animations and clean aesthetics.
 Focus on creating a refined, professional design with:
 - Thoughtful whitespace using Tailwind's spacing system
 - Subtle fade and scale animations on hover
 - Perfect typography with careful attention to line height
-- Strategic use of shadows for depth
+- Strategic use of shadows for depth (shadow-md, shadow-lg)
 - High contrast for better readability
 - Elegant hover states with smooth transitions
 - Clean form elements with validation states
 - Loading skeletons with pulse animations
 - Meaningful empty states
 - Mobile-first responsive design
-- Use soft, muted colors and gradients`,
+- Use soft, muted colors and gradients (bg-gradient-to-br from-gray-50 to-gray-100)
+
+Important: Ensure the component has a white or light background (bg-white or bg-gray-50) for visibility, and wrap interactive elements in proper containers with background colors.
+Return ONLY the JSX code without any wrapper, imports, or exports.`,
     
     elegant: `Create a luxury-grade UI component with premium animations and rich visual effects.
 Focus on creating a high-end, polished design with:
@@ -50,7 +56,10 @@ Focus on creating a high-end, polished design with:
 - Thoughtful empty states with illustrations
 - Perfect mobile responsiveness
 - Integration of animated icons
-- Use rich colors and gradients for visual impact`
+- Use rich colors and gradients for visual impact
+
+Important: Ensure the component has a white or light background (bg-white or bg-gray-50) for visibility, and wrap interactive elements in proper containers with background colors.
+Return ONLY the JSX code without any wrapper, imports, or exports.`
   };
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
@@ -76,7 +85,8 @@ Important rules:
 7. Ensure accessibility with ARIA attributes
 8. Generate realistic content
 9. Use shadcn/ui components where appropriate
-10. Add meaningful animations and transitions`;
+10. Add meaningful animations and transitions
+11. ALWAYS wrap content in a container with a light background color for visibility`;
 
   const prompt_template = `${systemPrompt}
 
