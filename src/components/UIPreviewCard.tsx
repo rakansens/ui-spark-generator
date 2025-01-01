@@ -41,11 +41,11 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{style || "生成されたUI"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6">
+          <div className="flex-1 overflow-y-auto space-y-6 pr-2">
             <div className="border rounded-lg p-4 bg-white/5">
               <DynamicUIRenderer code={code || ""} />
             </div>
