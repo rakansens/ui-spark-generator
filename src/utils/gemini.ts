@@ -7,48 +7,50 @@ const generateVariation = async (prompt: string, style: "modern" | "minimal" | "
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // Update to use gemini-1.5-flash model as recommended
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const stylePrompts = {
-    modern: `Create a premium, modern UI component that showcases the best of contemporary web design.
+    modern: `Create a vibrant, modern UI component with dynamic animations and rich visual effects.
 Focus on creating an impressive, production-ready design with:
-- Bold typography with perfect hierarchy using font sizes and weights
-- Rich interactive elements with hover states and micro-animations
+- Bold typography with perfect hierarchy using custom font sizes
+- Rich interactive elements with hover states and micro-animations using Tailwind's animate classes
 - Advanced layout using CSS Grid and Flexbox for perfect responsiveness
-- Strategic use of gradients, shadows, and depth
-- Meaningful animations using Tailwind's transition and transform classes
+- Strategic use of gradients (bg-gradient-to-r from-purple-500 to-blue-500)
+- Meaningful animations (animate-fade-in, animate-bounce, animate-pulse)
 - Professional spacing and padding using Tailwind's spacing system
-- Accessibility features including ARIA labels and keyboard navigation
-- Integration of shadcn/ui components where appropriate
-- Error states and loading states
-- Thoughtful empty states and placeholder content`,
+- Accessibility features including ARIA labels
+- Integration of shadcn/ui components
+- Hover effects with scale transformations (hover:scale-105)
+- Transition effects on interactive elements
+- Use vibrant colors like indigo-500, purple-600, blue-500`,
     
-    minimal: `Design a sophisticated, minimal UI component that emphasizes content and functionality.
-Focus on creating a premium, refined design with:
+    minimal: `Design a sophisticated, minimal UI component with subtle animations and clean aesthetics.
+Focus on creating a refined, professional design with:
 - Thoughtful whitespace using Tailwind's spacing system
-- Subtle animations that enhance usability
-- Perfect typography with careful attention to line height and letter spacing
-- Strategic use of borders and dividers
+- Subtle fade and scale animations on hover
+- Perfect typography with careful attention to line height
+- Strategic use of shadows for depth
 - High contrast for better readability
-- Subtle hover states and focus indicators
-- Clean form elements with proper validation states
-- Loading skeletons and transitions
+- Elegant hover states with smooth transitions
+- Clean form elements with validation states
+- Loading skeletons with pulse animations
 - Meaningful empty states
-- Mobile-first responsive design`,
+- Mobile-first responsive design
+- Use soft, muted colors and gradients`,
     
-    elegant: `Create a luxury-grade UI component with meticulous attention to detail.
+    elegant: `Create a luxury-grade UI component with premium animations and rich visual effects.
 Focus on creating a high-end, polished design with:
-- Premium typography combinations using custom font sizes
-- Sophisticated color palette with accent colors
-- Rich interactive states with smooth transitions
+- Premium typography using custom font sizes and weights
+- Sophisticated color gradients (bg-gradient-to-br from-indigo-600 to-purple-600)
+- Rich interactive states with scale and fade animations
 - Advanced grid layouts with perfect alignment
-- Strategic use of borders and dividers
-- Professional form validation and error states
-- Loading states and transitions
-- Thoughtful empty states
+- Strategic use of shadows (shadow-lg, shadow-xl)
+- Professional hover effects with transform scale
+- Loading states with smooth transitions
+- Thoughtful empty states with illustrations
 - Perfect mobile responsiveness
-- Integration of professional icons from lucide-react`
+- Integration of animated icons
+- Use rich colors and gradients for visual impact`
   };
 
   const systemPrompt = `You are an expert UI developer specializing in creating premium React components with Tailwind CSS and shadcn/ui.
@@ -58,21 +60,23 @@ Important rules:
 1. Return ONLY pure JSX code without any React component wrapper, imports, or exports
 2. Use Tailwind CSS classes extensively for styling, including:
    - Advanced layouts with grid and flexbox
-   - Perfect responsive design for all screen sizes
-   - Rich hover and focus states
-   - Meaningful animations and transitions
-   - Strategic use of gradients and shadows
+   - Rich animations (animate-fade-in, animate-bounce)
+   - Hover effects (hover:scale-105, hover:shadow-lg)
+   - Gradient backgrounds (bg-gradient-to-r, bg-gradient-to-br)
    - Professional typography hierarchy
-3. Create visually impressive designs that look premium and professional
+   - Strategic use of shadows for depth
+3. Create visually impressive designs with:
+   - Vibrant colors and gradients
+   - Smooth animations and transitions
+   - Interactive hover states
+   - Professional spacing
 4. Include multiple interactive elements with proper states
 5. Use semantic HTML elements
-6. Implement proper spacing and padding using Tailwind's spacing system
+6. Implement proper spacing and padding
 7. Ensure accessibility with ARIA attributes
-8. Generate realistic, context-appropriate content
+8. Generate realistic content
 9. Use shadcn/ui components where appropriate
-10. Include loading states and error states
-11. Add meaningful empty states
-12. Implement proper form validation where applicable`;
+10. Add meaningful animations and transitions`;
 
   const prompt_template = `${systemPrompt}
 

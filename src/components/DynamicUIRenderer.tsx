@@ -9,11 +9,9 @@ interface DynamicUIRendererProps {
 const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   const createComponentFromCode = (code: string) => {
     try {
-      // Extract only the JSX code between ```jsx and ``` tags
       const jsxMatch = code.match(/```(?:jsx|tsx)?\s*([\s\S]*?)```/);
       const jsxCode = jsxMatch ? jsxMatch[1].trim() : code.trim();
 
-      // Create a component function that returns the JSX
       const componentCode = `
         (function() {
           return function DynamicComponent() {
@@ -22,12 +20,10 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
         })()
       `;
 
-      // Transform the code using Babel
       const { code: transpiledCode } = transform(componentCode, {
         presets: ['react'],
       });
 
-      // Create and return the component
       const ComponentFunction = new Function('React', `return ${transpiledCode}`)(React);
       return React.createElement(ComponentFunction);
 
@@ -42,8 +38,8 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   };
 
   return (
-    <Card className="p-4 bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="preview">
+    <Card className="relative bg-white dark:bg-gray-900 shadow-lg rounded-lg overflow-hidden">
+      <div className="preview bg-white dark:bg-gray-900 p-6">
         {createComponentFromCode(code)}
       </div>
     </Card>
