@@ -31,7 +31,7 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
                   {style}
                 </span>
               )}
-              <div className="bg-white rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 shadow-inner">
                 {code && <DynamicUIRenderer code={code} />}
               </div>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -43,16 +43,19 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-white dark:bg-gray-900">
+        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-gray-100 dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle className="text-gray-900 dark:text-white">{style || "生成されたUI"}</DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-gray-400">
               生成されたUIのプレビューとコードを確認できます
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm">
-              <DynamicUIRenderer code={code || ""} />
+          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-gray-200 dark:bg-gray-800 rounded-lg">
+            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm">
+              <div className="preview-container relative">
+                <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                <DynamicUIRenderer code={code || ""} />
+              </div>
             </div>
             {code && (
               <div className="space-y-2">
