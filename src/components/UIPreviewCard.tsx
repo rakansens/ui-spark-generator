@@ -31,11 +31,8 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
                   {style}
                 </span>
               )}
-              <div className="bg-black rounded-lg p-4 shadow-inner relative">
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1)),linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1))] bg-[length:20px_20px] opacity-20"></div>
-                <div className="relative z-10">
-                  {code && <DynamicUIRenderer code={code} />}
-                </div>
+              <div className="bg-white rounded-lg p-4">
+                {code && <DynamicUIRenderer code={code} />}
               </div>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span className="text-white text-sm font-medium">クリックして詳細を表示</span>
@@ -46,21 +43,16 @@ const UIPreviewCard = ({ loading, code, alt, style }: UIPreviewCardProps) => {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+        <DialogContent className="w-[90vw] max-w-4xl h-[90vh] flex flex-col bg-white dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle className="text-gray-900 dark:text-white">{style || "生成されたUI"}</DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-gray-400">
               生成されたUIのプレビューとコードを確認できます
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-gray-200/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
-            <div className="relative bg-black border-2 border-gray-400 dark:border-gray-500 rounded-lg p-6 shadow-lg">
-              <div className="preview-container relative">
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1)),linear-gradient(45deg,rgba(255,255,255,.1)_25%,transparent_25%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1))] bg-[length:20px_20px] opacity-20"></div>
-                <div className="relative z-10">
-                  <DynamicUIRenderer code={code || ""} />
-                </div>
-              </div>
+          <div className="flex-1 overflow-y-auto space-y-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm">
+              <DynamicUIRenderer code={code || ""} />
             </div>
             {code && (
               <div className="space-y-2">

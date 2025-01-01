@@ -38,8 +38,8 @@ const DynamicUIRenderer = ({ code }: DynamicUIRendererProps) => {
   };
 
   return (
-    <Card className="relative overflow-hidden border-2 border-gray-400 dark:border-gray-600">
-      <div className="preview relative z-10 bg-black p-6 shadow-inner">
+    <Card className="relative bg-white dark:bg-gray-900 shadow-lg rounded-lg overflow-hidden">
+      <div className="preview bg-white dark:bg-gray-900 p-6">
         {createComponentFromCode(code)}
       </div>
     </Card>
